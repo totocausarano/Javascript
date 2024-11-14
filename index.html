@@ -7,6 +7,25 @@
 </head>
 <body>
     <h1>Simulador de Promoción</h1>
+    <h2>Agregar Alumno</h2>
+    <form id="formAgregarAlumno">
+        <label for="nombreAlumno">Nombre del Alumno:</label>
+        <input type="text" id="nombreAlumno" required>
+        
+        <label for="nota1">Nota del Primer Parcial:</label>
+        <input type="number" id="nota1" min="0" max="10" required>
+        
+        <label for="nota2">Nota del Segundo Parcial:</label>
+        <input type="number" id="nota2" min="0" max="10" required>
+        
+        <button type="submit">Agregar Alumno</button>
+    </form>
+    <h2>Lista de Alumnos</h2>
+    <ul id="listaAlumnos"></ul>
+    <h2>Buscar Alumno</h2>
+    <input type="text" id="nombreBusqueda" placeholder="Ingrese el nombre del alumno">
+    <button type="button" id="buscarAlumno">Buscar alumno</button>
+    <p id="resultadoBusqueda"></p>
 
     <script src="app.js"></script>
 </body>

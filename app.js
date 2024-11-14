@@ -1,65 +1,63 @@
 
-let promocionados = []
-let regulares = []
-let libres = []
+let promocionados = [];
+let regulares = [];
+let libres = [];
+class Alumno {
+    constructor(nombre, nota1, nota2) {
+        this.nombre = nombre;
+        this.nota1 = parseFloat(nota1);
+        this.nota2 = parseFloat(nota2);
+        this.promedio = (this.nota1 + this.nota2) / 2;
+        this.condicion = this.obtenerCondicion(); 
+    }
+    obtenerCondicion() {
+        if (this.promedio >= 8 && this.nota1 >= 7 && this.nota2 >= 7) {
+            promocionados.push(this.nombre); 
+            return "Promocionado";
+        } else if (this.promedio >= 6) {
+            regulares.push(this.nombre); 
+            return "Regular";
+        } else {
+            libres.push(this.nombre); 
+            return "Libre";
+        }
+    }
+}
+function agregarAlumno(event) {
+    event.preventDefault();
+    const nombre = document.getElementById('nombreAlumno').value;
+    const nota1 = document.getElementById('nota1').value;
+    const nota2 = document.getElementById('nota2').value;
+    const nuevoAlumno = new Alumno(nombre, nota1, nota2);
+    let alumnos = JSON.parse(localStorage.getItem("alumnos")) || [];
+    alumnos.push(nuevoAlumno);
+    localStorage.setItem("alumnos", JSON.stringify(alumnos));
+    mostrarAlumno(nuevoAlumno);
+}
 
-function verificacionpromocion(){
-    let alumno = prompt ("ingrese el nombre del alumno")
-    let nota1 = prompt (`ingrese la nota del primer parcial del alumno ${alumno}`)
-    let nota2 = prompt (`ingrese la nota del segundo parcial del alumno ${alumno}`)
+function mostrarAlumno(alumno) {
+    const lista = document.getElementById("listaAlumnos");
+    const li = document.createElement("li");
+    li.textContent = `${alumno.nombre} - ${alumno.condicion} - Promedio: ${alumno.promedio}`;
+    lista.appendChild(li);
+}
 
-    let promedio = (nota1 + nota2)/2;
-    if (promedio >=8 && nota1 >= 7 && nota2 >= 7){   
-        promocionados.push (alumno)
-    } else if (promedio>=6 && nota1 >= 6 && nota2 >=6) {
-        regulares.push (alumno)
+document.getElementById("formAgregarAlumno").addEventListener("submit", agregarAlumno);
+
+function buscarAlumno(event) {
+    event.preventDefault();
+    const nombre = document.getElementById("nombreBusqueda").value;
+    const resultadoBusqueda = document.getElementById("resultadoBusqueda");
+
+    if (promocionados.includes(nombre)) {
+        resultadoBusqueda.textContent = `El alumno ${nombre} ha promocionado la materia.`;
+    } else if (regulares.includes(nombre)) {
+        resultadoBusqueda.textContent = `El alumno ${nombre} ha regularizado la materia.`;
+    } else if (libres.includes(nombre)) {
+        resultadoBusqueda.textContent = `El alumno ${nombre} ha quedado libre en la materia.`;
     } else {
-        libres.push (alumno)
-    }
-}
-function buscaralumno(){
-    let buscar = prompt ("ingrese el nombre del alumno al que desee buscar ")
-    if (promocionados.includes(buscar)){
-        alert (`el alumno ${buscar} promociono la materia`)
-    }
-    else if (regulares.includes(buscar)){
-        alert (`el alumno ${buscar} regularizo la materia`)
-    }
-    else if (libres.includes(buscar)){
-        alert (`el alumno ${buscar} no aprobo la materia`)
-    }
-    else {
-        alert (`al alumno ${buscar} no se encuentra en ninguna lista`)
+        resultadoBusqueda.textContent = `El alumno ${nombre} no se encuentra en el registro.`;
     }
 }
 
-let continuar = true
-
-while (continuar) {
-    let opcion = parseInt(prompt(`
-    Bienvenido a la aplicación. Seleccione una opción:
-    1. Ver condiciones de regularidad
-    2. Agregar alumno
-    3. Buscar alumno para saber su condición
-    4. Terminar el programa
-    `));
-
-    switch (opcion) {
-        case 1:
-            alert(`Condiciones de regularidad:
-            - Promoción: Promedio >= 8, y ambas notas >= 7
-            - Regular: Promedio >= 6
-            - Libre: Promedio < 6`);
-            break;
-        case 2:
-            verificacionpromocion();
-            break
-        case 3:
-            buscaralumno();
-            break;
-        case 4:
-            continuar = false; 
-            alert("El programa ha finalizado.");
-            break;
-    }
-}
+document.getElementById("buscarAlumno").addEventListener("click", buscarAlumno);
