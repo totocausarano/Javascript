@@ -3,29 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulador de Promoción de Materias</title>
+    <title>Gestión de Alumnos</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
-    <h1>Simulador de Promoción</h1>
-    <h2>Agregar Alumno</h2>
+    <h1>Gestión de Alumnos</h1>
+
+    <!-- Formulario para agregar un alumno -->
     <form id="formAgregarAlumno">
-        <label for="nombreAlumno">Nombre del Alumno:</label>
-        <input type="text" id="nombreAlumno" required>
-        
-        <label for="nota1">Nota del Primer Parcial:</label>
-        <input type="number" id="nota1" min="0" max="10" required>
-        
-        <label for="nota2">Nota del Segundo Parcial:</label>
-        <input type="number" id="nota2" min="0" max="10" required>
-        
+        <input type="text" id="nombreAlumno" placeholder="Nombre" required>
+        <input type="text" id="apellidoAlumno" placeholder="Apellido" required>
+        <input type="text" id="dniAlumno" placeholder="DNI" required>
+        <input type="number" id="nota1" placeholder="Nota 1" required>
+        <input type="number" id="nota2" placeholder="Nota 2" required>
         <button type="submit">Agregar Alumno</button>
     </form>
-    <h2>Lista de Alumnos</h2>
+
+    <!-- Lista de alumnos -->
     <ul id="listaAlumnos"></ul>
-    <h2>Buscar Alumno</h2>
-    <input type="text" id="nombreBusqueda" placeholder="Ingrese el nombre del alumno">
-    <button type="button" id="buscarAlumno">Buscar alumno</button>
+
+    <!-- Formulario para buscar un alumno -->
+    <form id="formBuscarAlumno">
+        <input type="text" id="dniBusqueda" placeholder="Buscar por DNI">
+        <button type="button" id="buscarAlumno">Buscar</button>
+    </form>
+
+    <!-- Resultado de la búsqueda -->
     <p id="resultadoBusqueda"></p>
+
+    <!-- Botón para limpiar la lista -->
+    <button id="limpiarLista">Limpiar Lista</button>
 
     <script src="app.js"></script>
 </body>

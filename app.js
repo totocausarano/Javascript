@@ -1,63 +1,118 @@
+let alumnos = JSON.parse(localStorage.getItem("alumnos")) || [];
 
-let promocionados = [];
-let regulares = [];
-let libres = [];
+// Clase Alumno 
 class Alumno {
-    constructor(nombre, nota1, nota2) {
+    constructor(nombre, apellido, dni, nota1, nota2) {
         this.nombre = nombre;
+        this.apellido = apellido;
+        this.dni = dni;
         this.nota1 = parseFloat(nota1);
         this.nota2 = parseFloat(nota2);
-        this.promedio = (this.nota1 + this.nota2) / 2;
-        this.condicion = this.obtenerCondicion(); 
+        this.promedio = this.calcularPromedio();
+        this.condicion = this.obtenerCondicion();
     }
+
+    calcularPromedio() {
+        return (this.nota1 + this.nota2) / 2;
+    }
+
     obtenerCondicion() {
         if (this.promedio >= 8 && this.nota1 >= 7 && this.nota2 >= 7) {
-            promocionados.push(this.nombre); 
             return "Promocionado";
         } else if (this.promedio >= 6) {
-            regulares.push(this.nombre); 
             return "Regular";
         } else {
-            libres.push(this.nombre); 
             return "Libre";
         }
     }
 }
+// Función para agregar un nuevo alumno
 function agregarAlumno(event) {
     event.preventDefault();
-    const nombre = document.getElementById('nombreAlumno').value;
-    const nota1 = document.getElementById('nota1').value;
-    const nota2 = document.getElementById('nota2').value;
-    const nuevoAlumno = new Alumno(nombre, nota1, nota2);
-    let alumnos = JSON.parse(localStorage.getItem("alumnos")) || [];
+
+    const nombre = document.getElementById("nombreAlumno").value.trim();
+    const apellido = document.getElementById("apellidoAlumno").value.trim();
+    const dni = document.getElementById("dniAlumno").value.trim();
+    const nota1 = document.getElementById("nota1").value;
+    const nota2 = document.getElementById("nota2").value;
+
+    // Validación de campos vacíos
+    if (!nombre || !apellido || !dni || !nota1 || !nota2) {
+        mostrarAlerta("Todos los campos son obligatorios.", "error");
+        return;
+    }
+
+    // Validar que el DNI no esté repetido
+    if (alumnos.some(alumno => alumno.dni === dni)) {
+        mostrarAlerta(`El alumno con DNI ${dni} ya está registrado.`, "warning");
+        return;
+    }
+
+    // Crear y agregar el alumno
+    const nuevoAlumno = new Alumno(nombre, apellido, dni, nota1, nota2);
     alumnos.push(nuevoAlumno);
     localStorage.setItem("alumnos", JSON.stringify(alumnos));
     mostrarAlumno(nuevoAlumno);
-}
+    mostrarAlerta("Alumno agregado exitosamente.", "success");
 
+    // Limpiar el formulario
+    document.getElementById("formAgregarAlumno").reset();
+}
+// Función para mostrar un alumno en la lista
 function mostrarAlumno(alumno) {
     const lista = document.getElementById("listaAlumnos");
     const li = document.createElement("li");
-    li.textContent = `${alumno.nombre} - ${alumno.condicion} - Promedio: ${alumno.promedio}`;
+    li.textContent = `${alumno.nombre} ${alumno.apellido} - DNI: ${alumno.dni} - Condición: ${alumno.condicion} - Promedio: ${alumno.promedio.toFixed(2)}`;
     lista.appendChild(li);
 }
-
-document.getElementById("formAgregarAlumno").addEventListener("submit", agregarAlumno);
-
+// Función para buscar un alumno por DNI
 function buscarAlumno(event) {
     event.preventDefault();
-    const nombre = document.getElementById("nombreBusqueda").value;
+    const dni = document.getElementById("dniBusqueda").value.trim();
     const resultadoBusqueda = document.getElementById("resultadoBusqueda");
+    if (!dni) {
+        mostrarAlerta("Ingrese el DNI del alumno a buscar.", "warning");
+        return;
+    }
+    const alumnoEncontrado = alumnos.find(alumno => alumno.dni === dni);
 
-    if (promocionados.includes(nombre)) {
-        resultadoBusqueda.textContent = `El alumno ${nombre} ha promocionado la materia.`;
-    } else if (regulares.includes(nombre)) {
-        resultadoBusqueda.textContent = `El alumno ${nombre} ha regularizado la materia.`;
-    } else if (libres.includes(nombre)) {
-        resultadoBusqueda.textContent = `El alumno ${nombre} ha quedado libre en la materia.`;
+    if (alumnoEncontrado) {
+        resultadoBusqueda.textContent = `El alumno ${alumnoEncontrado.nombre} ${alumnoEncontrado.apellido} con DNI ${dni} es ${alumnoEncontrado.condicion} con un promedio de ${alumnoEncontrado.promedio.toFixed(2)}.`;
     } else {
-        resultadoBusqueda.textContent = `El alumno ${nombre} no se encuentra en el registro.`;
+        resultadoBusqueda.textContent = `No se encontró ningún alumno con el DNI ${dni}.`;
     }
 }
-
+// Función para limpiar la lista de alumnos
+function limpiarListaAlumnos() {
+    Swal.fire({
+        text: "¿Estás seguro de que quieres borrar la lista de alumnos?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, borrar",
+        cancelButtonText: "Cancelar",
+    }).then(result => {
+        if (result.isConfirmed) {
+            alumnos = [];
+            localStorage.removeItem("alumnos");
+            document.getElementById("listaAlumnos").innerHTML = "";
+            document.getElementById("resultadoBusqueda").textContent = "";
+            mostrarAlerta("Lista de alumnos eliminada exitosamente.", "success");
+        }
+    });
+}
+// Función para mostrar alertas usando SweetAlert
+function mostrarAlerta(mensaje, tipo) {
+    Swal.fire({
+        text: mensaje,
+        icon: tipo,
+        confirmButtonText: "Aceptar",
+    });
+}
+// Cargar alumnos guardados al cargar la página
+function cargarAlumnosGuardados() {
+    alumnos.forEach(alumno => mostrarAlumno(alumno));
+}
+document.getElementById("formAgregarAlumno").addEventListener("submit", agregarAlumno);
 document.getElementById("buscarAlumno").addEventListener("click", buscarAlumno);
+document.getElementById("limpiarLista").addEventListener("click", limpiarListaAlumnos);
+document.addEventListener("DOMContentLoaded", cargarAlumnosGuardados);
